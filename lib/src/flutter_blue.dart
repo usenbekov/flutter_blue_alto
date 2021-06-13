@@ -17,7 +17,7 @@ class FlutterBlue {
   /// Caching this stream allows for more than one listener to subscribe
   /// and unsubscribe apart from each other,
   /// while allowing events to still be sent to others that are subscribed
-  Stream<BluetoothState> _stateStream;
+  Stream<BluetoothState>? _stateStream;
 
   /// Singleton boilerplate
   FlutterBlue._() {
@@ -70,7 +70,7 @@ class FlutterBlue {
         .map((buffer) => new protos.BluetoothState.fromBuffer(buffer))
         .map((s) => BluetoothState.values[s.state.value]);
 
-    yield* _stateStream;
+    yield* _stateStream!;
   }
 
   /// Retrieve a list of connected devices
@@ -140,7 +140,7 @@ class FlutterBlue {
         .map((buffer) => new protos.ScanResult.fromBuffer(buffer))
         .map((p) {
       final result = new ScanResult.fromProto(p);
-      final list = _scanResults.value ?? [];
+      final list = _scanResults.value;
       int index = list.indexOf(result);
       if (index != -1) {
         list[index] = result;
