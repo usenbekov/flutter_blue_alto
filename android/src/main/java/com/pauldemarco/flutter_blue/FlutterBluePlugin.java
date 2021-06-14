@@ -179,7 +179,6 @@ public class FlutterBluePlugin implements FlutterPlugin, ActivityAware, MethodCa
         application = null;
     }
 
-
     @Override
     public void onMethodCall(MethodCall call, Result result) {
         if(mBluetoothAdapter == null && !"isAvailable".equals(call.method)) {
@@ -1003,7 +1002,9 @@ public class FlutterBluePlugin implements FlutterPlugin, ActivityAware, MethodCa
                 new Runnable() {
                     @Override
                     public void run() {
-                        channel.invokeMethod(name, byteArray);
+                        if (channel != null) {
+                            channel.invokeMethod(name, byteArray);
+                        }
                     }
                 });
     }
