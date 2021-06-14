@@ -64,6 +64,7 @@ import io.flutter.plugin.common.PluginRegistry.RequestPermissionsResultListener;
 public class FlutterBluePlugin implements FlutterPlugin, ActivityAware, MethodCallHandler, RequestPermissionsResultListener  {
     private static final String TAG = "FlutterBluePlugin";
     private Object initializationLock = new Object();
+    private Object tearDownLock = new Object();
     private Context context;
     private MethodChannel channel;
     private static final String NAMESPACE = "plugins.pauldemarco.com/flutter_blue";
@@ -166,17 +167,19 @@ public class FlutterBluePlugin implements FlutterPlugin, ActivityAware, MethodCa
     }
 
     private void tearDown() {
-        Log.i(TAG, "teardown");
-        context = null;
-        activityBinding.removeRequestPermissionsResultListener(this);
-        activityBinding = null;
-        channel.setMethodCallHandler(null);
-        channel = null;
-        stateChannel.setStreamHandler(null);
-        stateChannel = null;
-        mBluetoothAdapter = null;
-        mBluetoothManager = null;
-        application = null;
+        synchronized (tearDownLock) {
+            Log.i(TAG, "teardown");
+            context = null;
+            activityBinding.removeRequestPermissionsResultListener(this);
+            activityBinding = null;
+            channel.setMethodCallHandler(null);
+            channel = null;
+            stateChannel.setStreamHandler(null);
+            stateChannel = null;
+            mBluetoothAdapter = null;
+            mBluetoothManager = null;
+            application = null;
+        }
     }
 
     @Override
@@ -1002,8 +1005,10 @@ public class FlutterBluePlugin implements FlutterPlugin, ActivityAware, MethodCa
                 new Runnable() {
                     @Override
                     public void run() {
-                        if (channel != null) {
-                            channel.invokeMethod(name, byteArray);
+                        synchronized (tearDownLock) {
+                            if (channel != null) {
+                                channel.invokeMethod(name, byteArray);
+                            }
                         }
                     }
                 });
