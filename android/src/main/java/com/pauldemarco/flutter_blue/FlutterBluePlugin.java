@@ -281,12 +281,12 @@ public class FlutterBluePlugin implements FlutterPlugin, ActivityAware, MethodCa
                             result.error("get_connected_devices_error1", e.getMessage(), e);
                         }
                     }
+                    result.success(p.build().toByteArray());
+                    log(LogLevel.EMERGENCY, "mDevices size: " + mDevices.size());
                 } catch(Exception e) {
                     Log.e(TAG, "getConnectedDevices2 " + e.getMessage(), e);
                     result.error("get_connected_devices_error2", e.getMessage(), e);
                 }
-                result.success(p.build().toByteArray());
-                log(LogLevel.EMERGENCY, "mDevices size: " + mDevices.size());
                 break;
             }
 
@@ -909,7 +909,6 @@ public class FlutterBluePlugin implements FlutterPlugin, ActivityAware, MethodCa
                         invokeMethodUIThread("ScanResult", scanResult.toByteArray());
                     } catch(Exception e) {
                         Log.e(TAG, "onLeScan " + e.getMessage(), e);
-                        result.error("onLeScan", e.getMessage(), e);
                     }
                 }
             };
